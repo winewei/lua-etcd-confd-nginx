@@ -1,6 +1,7 @@
 local json = require "cjson"
 local http = require "resty.http"
 local httpc = http.new()
+local url = "http://127.0.0.1:2379/v2/keys/user_domain/"
 local t = {}
 
 local request_method = ngx.var.request_method
@@ -24,12 +25,10 @@ end
 t["companyId"] = p_args.companyId
 t["domain"] = p_args.domain
 t["status"] = "delete"
+
 -- 定义入etcd的key
 local key = p_args.companyId .. "_" .. p_args.domain
-
 local etcd_value = "value=" .. tostring(json.encode(t))
-api_uri = ngx.var.uri
-url = "http://127.0.0.1:2379/v2/keys/user_domain/"
 local create_directory_response, err = httpc:request_uri(url .. key, {
 	method = "DELETE",
 	headers = {
@@ -39,4 +38,3 @@ local create_directory_response, err = httpc:request_uri(url .. key, {
 ngx.say(json.encode(t))
 ngx.log(ngx.ERR,"post_data: ",json.encode(t))
 ngx.log(ngx.ERR,"response_data:  ",create_directory_response.body)
-
